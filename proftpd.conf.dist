@@ -1,0 +1,76 @@
+#Nome do Servidor
+ServerName "Um Servidor Qualquer"
+
+#Modo no qual rodará (standalone ou inetd)
+ServerType standalone
+DefaultServer on
+DeferWelcome off
+
+UseIPv6 off
+
+MaxInstances 3
+
+AllowOverwrite on
+
+#Não exibe informações sobre que tipo de servidor está rodando
+ServerIdent off
+
+#fuso horário universal (GMT) e não o local
+TimesGMT off
+MultilineRFC2228 on
+
+#Tempo Máximo sem transferência de dados
+TimeoutNoTransfer 600
+
+#Tempo Máximo com transferência parada(travada)
+TimeoutStalled 600
+
+#Tempo Máximo conectado mas sem troca de dados
+TimeoutIdle 1200
+
+DisplayLogin welcome.msg
+DisplayFirstChdir .message
+ListOptions "-l"
+DenyFilter \*.*/
+
+#Logs no Proftp
+WtmpLog off
+
+#Arquivo de log geral
+SystemLog /var/log/proftpd.log
+
+#Arquivo de log das transferências
+TransferLog /var/log/xferlog
+
+#Porta para socket de controle
+Port 21
+Umask 022 022
+
+#Máximo de usuários autenticados
+MaxClientesPerHost 3 "Muitos usuários conectados"
+
+#Numero Máximo de tentativas de login
+MaxLoginAttempts 3
+
+#Usuário sob qual o servidor irá rodar
+User
+nobody
+#Grupo
+Group nogroup
+
+#Os Usuários não poderão sair de seu diretório home
+DefaultRoot ~
+
+#Não permite o login do usuário root
+RootLogin off
+
+#Não requer que os usuários tenham um shell válido
+RequireValidShell off
+
+#Não bloqueia usuários baseando-se no arquivo /etc/ftpusers
+UseFtpUsers off 
+
+# Bar use of SITE CHMOD by default
+<Limit SITE_CHMOD>
+  DenyAll
+</Limit>
