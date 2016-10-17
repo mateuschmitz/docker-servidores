@@ -1,6 +1,15 @@
 FROM debian:jessie
 MAINTAINER Mateus Schmitz <matteuschmitz@gmail.com>
 
+# argumentos utilizados no build
+ARG USERNAME
+ARG USER_PASS
+ARG ROOT_PASS
+
+ARG MYSQL_USERNAME
+ARG MYSQL_USER_PASS
+ARG MYSQL_ROOT_PASS
+
 ENV DEBIAN_FRONTEND noninteractive
 
 # Adiciona novos repositórios
@@ -13,8 +22,8 @@ RUN apt-get update
 RUN apt-get upgrade -y
 
 # Configuração do MySQL
-RUN echo mysql-server mysql-server/root_password password 102030 | debconf-set-selections
-RUN echo mysql-server mysql-server/root_password_again password 102030 | debconf-set-selections
+RUN echo mysql-server mysql-server/root_password password $MYSQL_ROOT_PASS | debconf-set-selections
+RUN echo mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASS | debconf-set-selections
 
 # Expõe portas(apache, mysql, ssh, ftp)
 EXPOSE 80
@@ -29,36 +38,36 @@ RUN apt-get install -y mysql-server php5 php5-mysql php5-mcrypt apache2 vim git 
 RUN service apache2 stop
 
 # Muda o index do apache pra exibir a configuração do PHP
-RUN echo 102030 | sudo -S rm /var/www/html/index.html
-RUN echo 102030 | sudo -S printf "<?php\nphpinfo();" > /var/www/html/index.php
+RUN rm /var/www/html/index.html
+RUN printf "<?php\nphpinfo();" > /var/www/html/index.php
 
 # Módulo rewrite
 RUN a2enmod rewrite
 
 # cria um usuário para acesso
-RUN useradd -ms /bin/bash pedro
-RUN echo 'pedro:102030' | chpasswd
-RUN sudo adduser pedro sudo
+RUN useradd -ms /bin/bash $USERNAME
+RUN echo $USERNAME':'$USER_PASS | chpasswd
+RUN sudo adduser $USERNAME sudo
 
 # muda a senha do root
-RUN echo 'root:102030' | chpasswd
+RUN echo 'root:'$ROOT_PASS | chpasswd
 
 # Adiciona as configurações necessárias para start da máquina
 ADD ./files/.bashrc /root/.bashrc
-ADD ./files/.bashrc /home/pedro/.bashrc
+ADD ./files/.bashrc /home/$USERNAME/.bashrc
 
 # Habilita o mysql para acesso externo
 RUN sed s/127.0.0.1/0.0.0.0/ < /etc/mysql/my.cnf > /etc/mysql/my.cnf.new && mv /etc/mysql/my.cnf.new /etc/mysql/my.cnf
-RUN service mysql restart && echo "grant all on *.* to 'root'@'%' identified by '102030'" > /root/grant.sql && mysql -u root -p102030 < /root/grant.sql && rm /root/grant.sql
+RUN service mysql restart && echo "grant all on *.* to 'root'@'%' identified by '"$MYSQL_ROOT_PASS"'" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
 
 # Cria um novo usuário no MySQL
-RUN service mysql restart && echo "CREATE USER 'pedro'@'%' IDENTIFIED BY '102030';" > /root/create.sql && mysql -u root -p102030 < /root/create.sql && rm /root/create.sql
-RUN service mysql restart && echo "GRANT ALL ON *.* TO 'pedro'@'%' IDENTIFIED BY '102030';" > /root/grant.sql && mysql -u root -p102030 < /root/grant.sql && rm /root/grant.sql
-RUN service mysql restart && echo "FLUSH PRIVILEGES;" > /root/flush.sql && mysql -u root -p102030 < /root/flush.sql && rm /root/flush.sql
+RUN service mysql restart && echo "CREATE USER '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"MYSQL_USER_PASS"';" > /root/create.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/create.sql && rm /root/create.sql
+RUN service mysql restart && echo "GRANT ALL ON *.* TO '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"MYSQL_USER_PASS"';" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
+RUN service mysql restart && echo "FLUSH PRIVILEGES;" > /root/flush.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/flush.sql && rm /root/flush.sql
 
 # Adiciona inicialização de serviços ao .bashrc
 RUN touch /var/log/startup_logs.log
-RUN chown pedro:pedro /var/log/startup_logs.log
+RUN chown $USERNAME:$USERNAME /var/log/startup_logs.log
 
 RUN echo "# Verifica se os serviços estão ok\n\
 # Caso não estejam, inicia-os\n\
@@ -66,28 +75,28 @@ if pgrep \"apache2\" > /dev/null\n\
 then\n\
     echo Apache: OK\n\
 else\n\
-    echo 102030 | sudo -S service apache2 start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service apache2 start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"mysql\" > /dev/null\n\
 then\n\
     echo MySQL: OK\n\
 else\n\
-    echo 102030 | sudo -S service mysql start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service mysql start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"proftpd\" > /dev/null\n\
 then\n\
     echo ProFTPD: OK\n\
 else\n\
-    echo 102030 | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"ssh\" > /dev/null\n\
 then\n\
     echo SSH: OK\n\
 else\n\
-    echo 102030 | sudo -S service ssh start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service ssh start >> /var/log/startup_logs.log\n\
 fi\n\
 " >> /root/.bashrc
 
@@ -97,30 +106,30 @@ if pgrep \"apache2\" > /dev/null\n\
 then\n\
     echo Apache: OK\n\
 else\n\
-    echo 102030 | sudo -S service apache2 start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service apache2 start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"mysql\" > /dev/null\n\
 then\n\
     echo MySQL: OK\n\
 else\n\
-    echo 102030 | sudo -S service mysql start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service mysql start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"proftpd\" > /dev/null\n\
 then\n\
     echo ProFTPD: OK\n\
 else\n\
-    echo 102030 | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
 if pgrep \"ssh\" > /dev/null\n\
 then\n\
     echo SSH: OK\n\
 else\n\
-    echo 102030 | sudo -S service ssh start >> /var/log/startup_logs.log\n\
+    echo "$USER_PASS" | sudo -S service ssh start >> /var/log/startup_logs.log\n\
 fi\n\
-" >> /home/pedro/.bashrc
+" >> /home/$USERNAME/.bashrc
 
 # configura o ssh
 RUN apt-get install -y openssh-server
@@ -131,4 +140,4 @@ ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 # dá permissões pro usuário padrão
-RUN chown -R pedro:pedro /var/www
+RUN chown -R $USERNAME:$USERNAME /var/www
