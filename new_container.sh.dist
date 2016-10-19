@@ -79,10 +79,11 @@ docker run -it -d --name $HOSTNAME -h $HOSTNAME template/debian /bin/bash
 docker start $HOSTNAME
 
 # Recupera o id do container
-ID_CONTAINER=$(docker ps | awk '{ print $1, $14 }' | grep "$HOSTNAME" | awk '{ print $1 }')
+#ID_CONTAINER=$(docker ps | awk '{ print $1, $14 }' | grep "$HOSTNAME" | awk '{ print $1 }')
 
 # Recupera o IP do container
-IP_CONTAINER=$(docker inspect $ID_CONTAINER | grep IPAddress | tail -1 | cut -d '"' -f 4)
+#IP_CONTAINER=$(docker inspect $ID_CONTAINER | grep IPAddress | tail -1 | cut -d '"' -f 4)
+IP_CONTAINER=$(docker inspect $HOSTNAME | grep IPAddress | tail -1 | cut -d '"' -f 4)
 
 # Limpa o terminal e exibe os dados do container instanciado
 # echo -e \\033c
