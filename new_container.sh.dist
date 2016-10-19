@@ -79,7 +79,7 @@ docker run -it -d --name $HOSTNAME -h $HOSTNAME template/debian /bin/bash
 docker start $HOSTNAME
 
 # Recupera o id do container
-ID_CONTAINER=$(docker ps | awk '{ print $1, $16 }' | grep "$HOSTNAME" | awk '{ print $1 }')
+ID_CONTAINER=$(docker ps | awk '{ print $1, $14 }' | grep "$HOSTNAME" | awk '{ print $1 }')
 
 # Recupera o IP do container
 IP_CONTAINER=$(docker inspect $ID_CONTAINER | grep IPAddress | tail -1 | cut -d '"' -f 4)
@@ -89,7 +89,7 @@ IP_CONTAINER=$(docker inspect $ID_CONTAINER | grep IPAddress | tail -1 | cut -d 
 echo "$DOMAIN ($HOSTNAME) -> $IP_CONTAINER ($ID_CONTAINER)"
 
 # Limpa possíveis imagens intermediárias
-docker images | awk '{ print $3, $1 }' | grep '<none>' | awk '{ print $1 }' | xargs -I {} docker rmi {}
+docker images | awk '{ print $3, $1 }' | grep '<none>' | awk '{ print $1 }' | xargs -I {} docker rmi -f {}
 
 # Para evitar erros no ssh, remove dados salvos do antigo IP
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $IP_CONTAINER

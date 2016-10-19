@@ -41,3 +41,14 @@ docker images | awk '{ print $3, $1 }' | grep 'HOSTNAME' | awk '{ print $1 }'
 
 # RECUPERA IP DO CONTAINER 
 docker inspect ID_CONTAINER | grep IPAddress | tail -1 | cut -d '"' -f 4
+
+# REDE
+## Seta novo IP e máscara
+ifconfig eth0 192.168.1.164 netmask 255.255.255.0 up
+ifconfig eth0 192.168.1.164 netmask 255.255.255.0 up
+
+## MONTAGEM
+sudo mount -t nfs 10.0.3.15:/export/Containers /var/lib/docker/containers
+
+## FSTAB
+10.0.3.15:/export/Containers /var/lib/docker/containers nfs noatime,auto,defaults 0 0
