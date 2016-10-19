@@ -11,7 +11,7 @@ case $option in
         shift
         ;;
     -h|--hostname)
-        HOSTNAME="$2"
+        DOCKER_HOSTNAME="$2"
         shift
         ;;
     -u|--username)
@@ -41,7 +41,7 @@ if [[ -z $DOMAIN ]]; then
     exit
 fi
 
-if [[ -z $HOSTNAME ]]; then
+if [[ -z $DOCKER_HOSTNAME ]]; then
     echo 'Parâmetro -h|--hostname obrigatório' 
     exit
 fi
@@ -73,21 +73,17 @@ docker build --build-arg USERNAME=$USERNAME --build-arg USER_PASS=$USER_PASS \
 -t template/debian .
 
 # roda a imagem
-docker run -it -d --name $HOSTNAME -h $HOSTNAME template/debian /bin/bash
+docker run -it -d --name $DOCKER_HOSTNAME -h $DOCKER_HOSTNAME template/debian /bin/bash
 
 # dá start na imagem
-docker start $HOSTNAME
-
-# Recupera o id do container
-#ID_CONTAINER=$(docker ps | awk '{ print $1, $14 }' | grep "$HOSTNAME" | awk '{ print $1 }')
+docker start $DOCKER_HOSTNAME
 
 # Recupera o IP do container
-#IP_CONTAINER=$(docker inspect $ID_CONTAINER | grep IPAddress | tail -1 | cut -d '"' -f 4)
-IP_CONTAINER=$(docker inspect $HOSTNAME | grep IPAddress | tail -1 | cut -d '"' -f 4)
+IP_CONTAINER=$(docker inspect $DOCKER_HOSTNAME | grep IPAddress | tail -1 | cut -d '"' -f 4)
 
 # Limpa o terminal e exibe os dados do container instanciado
 # echo -e \\033c
-echo "$DOMAIN ($HOSTNAME) -> $IP_CONTAINER ($ID_CONTAINER)"
+echo "$DOMAIN ($DOCKER_HOSTNAME) -> $IP_CONTAINER"
 
 # Limpa containers doidos que ficam na lista
 docker ps -a | awk '{ print $1, $3 }' | grep "/bin/sh" | awk '{ print $1 }' | xargs -I {} docker rm -f {}
