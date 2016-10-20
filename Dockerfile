@@ -58,12 +58,13 @@ ADD ./files/.bashrc /home/$USERNAME/.bashrc
 
 # Habilita o mysql para acesso externo
 RUN sed s/127.0.0.1/0.0.0.0/ < /etc/mysql/my.cnf > /etc/mysql/my.cnf.new && mv /etc/mysql/my.cnf.new /etc/mysql/my.cnf
-RUN service mysql restart && echo "grant all on *.* to 'root'@'%' identified by '"$MYSQL_ROOT_PASS"'" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
+RUN service mysql restart && echo "grant all on *.* to 'root'@'%' identified by '"$MYSQL_ROOT_PASS"';" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
 
 # Cria um novo usuário no MySQL
-RUN service mysql restart && echo "CREATE USER '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"MYSQL_USER_PASS"';" > /root/create.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/create.sql && rm /root/create.sql
-RUN service mysql restart && echo "GRANT ALL ON *.* TO '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"MYSQL_USER_PASS"';" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
+RUN service mysql restart && echo "CREATE USER '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"$MYSQL_USER_PASS"';" > /root/create.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/create.sql && rm /root/create.sql
+RUN service mysql restart && echo "GRANT ALL ON *.* TO '"$MYSQL_USERNAME"'@'%' IDENTIFIED BY '"$MYSQL_USER_PASS"';" > /root/grant.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/grant.sql && rm /root/grant.sql
 RUN service mysql restart && echo "FLUSH PRIVILEGES;" > /root/flush.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/flush.sql && rm /root/flush.sql
+RUN service mysql restart && echo "SET PASSWORD FOR "$MYSQL_USERNAME" = PASSWORD('"$MYSQL_USER_PASS"');" > /root/password.sql && mysql -u root -p$MYSQL_ROOT_PASS < /root/password.sql && rm /root/password.sql
 
 # Adiciona inicialização de serviços ao .bashrc
 RUN touch /var/log/startup_logs.log

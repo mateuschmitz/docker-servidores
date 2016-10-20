@@ -52,3 +52,14 @@ sudo mount -t nfs 10.0.3.15:/export/Containers /var/lib/docker/containers
 
 ## FSTAB
 10.0.3.15:/export/Containers /var/lib/docker/containers nfs noatime,auto,defaults 0 0
+
+## COMPILAR NGINX
+/configure ./configure  --prefix=/opt/nginx --sbin-path=/usr/sbin/nginx  --conf-path=/opt/nginx/nginx.conf --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --with-http_ssl_module --with-threads --with-stream --with-http_slice_module
+make
+sudo make install
+
+## TESTAR CONFIG NGINX
+sudo nginx -t
+
+## LINK SIMBÓLICO NGINX
+sudo ln -s /etc/nginx/sites-available/teste1-mysql /etc/nginx/sites-enabled/teste1-mysql
