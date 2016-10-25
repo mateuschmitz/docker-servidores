@@ -34,7 +34,7 @@ EXPOSE 21
 EXPOSE 30000-30009
 
 # Instala apache, mysql e php
-RUN apt-get install -y --fix-missing mysql-server php5 php5-mysql php5-mcrypt apache2 vim git php5-dev libpcre3-dev build-essential net-tools wget sudo openssh-server proftpd
+RUN apt-get install -y --fix-missing mysql-server php5 php5-mysql php5-mcrypt apache2 vim git php5-dev libpcre3-dev build-essential net-tools wget sudo openssh-server openssh-server
 RUN service apache2 stop
 
 # Muda o index do apache pra exibir a configuração do PHP
@@ -45,7 +45,7 @@ RUN printf "<?php\nphpinfo();" > /var/www/html/index.php
 RUN a2enmod rewrite
 
 # cria um usuário para acesso
-RUN useradd -ms /bin/bash $USERNAME
+RUN useradd -ms /bin/bash -d /var/wwww $USERNAME
 RUN echo $USERNAME':'$USER_PASS | chpasswd
 RUN sudo adduser $USERNAME sudo
 
@@ -86,13 +86,6 @@ else\n\
     echo "$USER_PASS" | sudo -S service mysql start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
-if pgrep \"proftpd\" > /dev/null\n\
-then\n\
-    echo ProFTPD: OK\n\
-else\n\
-    echo "$USER_PASS" | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
-fi\n\
-\n\
 if pgrep \"ssh\" > /dev/null\n\
 then\n\
     echo SSH: OK\n\
@@ -117,13 +110,6 @@ else\n\
     echo "$USER_PASS" | sudo -S service mysql start >> /var/log/startup_logs.log\n\
 fi\n\
 \n\
-if pgrep \"proftpd\" > /dev/null\n\
-then\n\
-    echo ProFTPD: OK\n\
-else\n\
-    echo "$USER_PASS" | sudo -S service proftpd start >> /var/log/startup_logs.log\n\
-fi\n\
-\n\
 if pgrep \"ssh\" > /dev/null\n\
 then\n\
     echo SSH: OK\n\
@@ -133,7 +119,6 @@ fi\n\
 " >> /home/$USERNAME/.bashrc
 
 # configura o ssh
-RUN apt-get install -y --fix-missing openssh-server
 RUN mkdir /var/run/sshd
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd

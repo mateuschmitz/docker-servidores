@@ -57,7 +57,9 @@ sudo mount -t nfs 10.0.3.15:/export/Containers /var/lib/docker/containers
 wget 'http://nginx.org/download/nginx-1.10.1.tar.gz'
 
 ## COMPILAR NGINX
-sudo ./configure  --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx  --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --with-ipv6 --with-http_ssl_module --with-threads --with-stream --with-http_slice_module
+sudo ./configure --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx  --conf-path=/etc/nginx/nginx.conf --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --with-ipv6 --with-http_ssl_module --with-threads --with-stream --with-http_slice_module
+OU
+sudo ./configure --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' --with-ld-opt=-Wl,-z,relro --sbin-path=/usr/sbin/nginx --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-debug --with-pcre-jit --with-ipv6 --with-threads --with-stream --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_addition_module --with-http_dav_module --with-http_gzip_static_module --with-http_sub_module --with-mail --with-mail_ssl_module
 make
 sudo make install
 
@@ -79,7 +81,6 @@ sudo nginx -t
 ## LINK SIMBÓLICO NGINX
 sudo ln -s /etc/nginx/sites-available/teste1-mysql /etc/nginx/sites-enabled/teste1-mysql
 
-<<<<<<< HEAD
 ## Unit do Nginx
 /lib/systemd/system/nginx.service
 sudo systemctl daemon-reload
@@ -87,3 +88,83 @@ sudo systemctl daemon-reload
 sudo /etc/init.d/nginx reload
 sudo /etc/init.d/nginx restart
 
+## COMPILAR 1.11.5
+--prefix=/etc/nginx 
+--sbin-path=/usr/sbin/nginx  
+--conf-path=/etc/nginx/nginx.conf 
+--pid-path=/var/run/nginx.pid 
+--lock-path=/var/run/nginx.lock 
+--with-ipv6 
+--with-http_ssl_module 
+--with-threads 
+--with-stream 
+--with-http_slice_module
+
+## COMPILAR 1.6.5
+--with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' 
+--with-ld-opt=-Wl,-z,relro 
+--prefix=/usr/share/nginx 
+--conf-path=/etc/nginx/nginx.conf 
+--http-log-path=/var/log/nginx/access.log 
+--error-log-path=/var/log/nginx/error.log 
+--lock-path=/var/lock/nginx.lock 
+--pid-path=/run/nginx.pid 
+--http-client-body-temp-path=/var/lib/nginx/body 
+--http-fastcgi-temp-path=/var/lib/nginx/fastcgi 
+--http-proxy-temp-path=/var/lib/nginx/proxy 
+--http-scgi-temp-path=/var/lib/nginx/scgi 
+--http-uwsgi-temp-path=/var/lib/nginx/uwsgi 
+--with-debug 
+--with-pcre-jit 
+--with-ipv6 
+--with-http_ssl_module 
+--with-http_stub_status_module 
+--with-http_realip_module 
+--with-http_auth_request_module 
+--with-http_addition_module 
+--with-http_dav_module 
+--with-http_geoip_module 
+--with-http_gzip_static_module 
+--with-http_image_filter_module 
+--with-http_spdy_module 
+--with-http_sub_module 
+--with-http_xslt_module 
+--with-mail 
+--with-mail_ssl_module 
+--add-module=/build/nginx-ryOGNl/nginx-1.6.2/debian/modules/nginx-auth-pam 
+--add-module=/build/nginx-ryOGNl/nginx-1.6.2/debian/modules/nginx-dav-ext-module 
+--add-module=/build/nginx-ryOGNl/nginx-1.6.2/debian/modules/nginx-echo 
+--add-module=/build/nginx-ryOGNl/nginx-1.6.2/debian/modules/nginx-upstream-fair 
+--add-module=/build/nginx-ryOGNl/nginx-1.6.2/debian/modules/ngx_http_substitutions_filter_module
+
+## MERGE DE AMBOS
+--with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2' 
+--with-ld-opt=-Wl,-z,relro
+--sbin-path=/usr/sbin/nginx  
+--prefix=/usr/share/nginx 
+--conf-path=/etc/nginx/nginx.conf 
+--http-log-path=/var/log/nginx/access.log 
+--error-log-path=/var/log/nginx/error.log 
+--lock-path=/var/lock/nginx.lock 
+--pid-path=/run/nginx.pid 
+--http-client-body-temp-path=/var/lib/nginx/body 
+--http-fastcgi-temp-path=/var/lib/nginx/fastcgi 
+--http-proxy-temp-path=/var/lib/nginx/proxy 
+--http-scgi-temp-path=/var/lib/nginx/scgi 
+--http-uwsgi-temp-path=/var/lib/nginx/uwsgi 
+--with-debug 
+--with-pcre-jit 
+--with-ipv6 
+--with-threads
+--with-stream 
+--with-http_slice_module
+--with-http_ssl_module 
+--with-http_stub_status_module 
+--with-http_realip_module 
+--with-http_auth_request_module 
+--with-http_addition_module 
+--with-http_dav_module 
+--with-http_gzip_static_module 
+--with-http_sub_module 
+--with-mail 
+--with-mail_ssl_module 
