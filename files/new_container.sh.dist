@@ -93,3 +93,19 @@ docker images | awk '{ print $3, $1 }' | grep '<none>' | awk '{ print $1 }' | xa
 
 # Para evitar erros no ssh, remove dados salvos do antigo IP
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $IP_CONTAINER
+ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOCKER_HOSTNAME
+
+# cria proxy web
+echo "server {  
+        listen 80;
+        server_name $DOMAIN;
+        location / {
+             proxy_pass http://$IP_CONTAINER:80;
+        }
+}" > /etc/nginx/sites-available/$DOMAIN
+
+# cria o link simbólico
+ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
+
+#adiciona no hosts apontando para localhost -> somente em dev
+# echo "127.0.0.1   $DOMAIN" >> /etc/hosts
