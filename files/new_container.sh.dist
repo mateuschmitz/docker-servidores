@@ -107,5 +107,26 @@ echo "server {
 # cria o link simbólico
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
-#adiciona no hosts apontando para localhost -> somente em dev
-# echo "127.0.0.1   $DOMAIN" >> /etc/hosts
+# cria proxy mysql e ssh
+echo "stream {
+    server {
+        listen 3306;
+        proxy_pass DOCKER_HOSTNAME_db;
+    }
+    upstream DOCKER_HOSTNAME_db {
+        server $IP_CONTAINER:3306;
+    }
+    server {
+        listen 22;
+        proxy_pass DOCKER_HOSTNAME_ssh;
+    }
+    upstream DOCKER_HOSTNAME_ssh {
+        server $IP_CONTAINER:22;
+    }   
+}" > /etc/nginx/proxies-available/$DOMAIN
+
+# cria o link simbólico
+ln -s /etc/nginx/proxies-available/$DOMAIN /etc/nginx/proxies-enabled/$DOMAIN
+
+#adiciona no hosts apontando para localhost
+# sudo echo "127.0.0.1   $DOMAIN" >> /etc/hosts
