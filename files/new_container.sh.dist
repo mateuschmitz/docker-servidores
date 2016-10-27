@@ -98,7 +98,7 @@ ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOCKER_HOSTNAME
 # cria proxy web
 echo "server {  
         listen 80;
-        server_name $DOMAIN;
+        server_name *.$DOMAIN;
         location / {
              proxy_pass http://$IP_CONTAINER:80;
         }
@@ -108,21 +108,19 @@ echo "server {
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 # cria proxy mysql e ssh
-echo "stream {
-    server {
+echo "server {
         listen 3306;
-        proxy_pass DOCKER_HOSTNAME_db;
+        proxy_pass $DOCKER_HOSTNAME_db;
     }
-    upstream DOCKER_HOSTNAME_db {
+    upstream $DOCKER_HOSTNAME_db {
         server $IP_CONTAINER:3306;
     }
     server {
         listen 22;
-        proxy_pass DOCKER_HOSTNAME_ssh;
+        proxy_pass $DOCKER_HOSTNAME_ssh;
     }
-    upstream DOCKER_HOSTNAME_ssh {
+    upstream $DOCKER_HOSTNAME_ssh {
         server $IP_CONTAINER:22;
-    }   
 }" > /etc/nginx/proxies-available/$DOMAIN
 
 # cria o link simbólico
