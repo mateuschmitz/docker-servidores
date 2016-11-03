@@ -55,7 +55,6 @@ RUN echo 'root:'$ROOT_PASS | chpasswd
 # Adiciona as configurações necessárias para start da máquina
 ADD ./files/.bashrc /root/.bashrc
 ADD ./files/.bashrc /home/$USERNAME/.bashrc
-RUN source /home/$USERNAME/.bashrc
 
 # Habilita o mysql para acesso externo
 RUN sed s/127.0.0.1/0.0.0.0/ < /etc/mysql/my.cnf > /etc/mysql/my.cnf.new && mv /etc/mysql/my.cnf.new /etc/mysql/my.cnf
