@@ -81,6 +81,9 @@ sudo nginx -t
 ## LINK SIMBÓLICO NGINX
 sudo ln -s /etc/nginx/sites-available/teste1-mysql /etc/nginx/sites-enabled/teste1-mysql
 
+## PERMITE EXECUTAR SEM SENHA(SUDO)
+username ALL = NOPASSWD: /etc/init.d/nginx
+
 ## Unit do Nginx
 /lib/systemd/system/nginx.service
 sudo systemctl daemon-reload
