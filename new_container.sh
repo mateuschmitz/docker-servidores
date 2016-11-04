@@ -14,22 +14,6 @@ case $option in
         DOCKER_HOSTNAME="$2"
         shift
         ;;
-    -u|--username)
-        USERNAME="$2"
-        shift
-        ;;
-    -up|--user_pass)
-        USER_PASS="$2"
-        shift
-        ;;
-    -rp|--root_pass)
-        ROOT_PASS="$2"
-        shift
-        ;;
-    -mrp|--mysql_root_pass)
-        MYSQL_ROOT_PASS="$2"
-        shift
-        ;;
     *)            
     ;;
 esac
@@ -45,32 +29,6 @@ if [[ -z $DOCKER_HOSTNAME ]]; then
     echo 'Parâmetro -h|--hostname obrigatório' 
     exit
 fi
-
-if [[ -z $USERNAME ]]; then
-    echo 'Parâmetro -u|--username obrigatório' 
-    exit
-fi
-
-if [[ -z $USER_PASS ]]; then
-    echo 'Parâmetro -up|--user_pass obrigatório' 
-    exit
-fi
-
-if [[ -z $ROOT_PASS ]]; then
-    echo 'Parâmetro -rp|--root_pass obrigatório' 
-    exit
-fi
-
-if [[ -z $MYSQL_ROOT_PASS ]]; then
-    echo 'Parâmetro -mrp|--mysql_root_pass obrigatório' 
-    exit
-fi
-
-# faz o build da imagem
-docker build --build-arg USERNAME=$USERNAME --build-arg USER_PASS=$USER_PASS \
---build-arg ROOT_PASS=$ROOT_PASS --build-arg MYSQL_USERNAME=$USERNAME \
---build-arg MYSQL_USER_PASS=$USER_PASS --build-arg MYSQL_ROOT_PASS=$MYSQL_ROOT_PASS \
--t template/debian .
 
 # roda a imagem
 docker run -it -d --name $DOCKER_HOSTNAME -h $DOCKER_HOSTNAME template/debian /bin/bash
@@ -94,6 +52,7 @@ docker images | awk '{ print $3, $1 }' | grep '<none>' | awk '{ print $1 }' | xa
 # Para evitar erros no ssh, remove dados salvos do antigo IP
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $IP_CONTAINER
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOCKER_HOSTNAME
+ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOMAIN
 
 # cria proxy web
 echo "server {  
@@ -126,5 +85,11 @@ echo "server {
 # cria o link simbólico
 ln -s /etc/nginx/proxies-available/$DOMAIN /etc/nginx/proxies-enabled/$DOMAIN
 
-#adiciona no hosts apontando para localhost
-# sudo echo "127.0.0.1   $DOMAIN" >> /etc/hosts
+# reload no nginx
+sudo /etc/init.d/nginx reload
+
+# ./new_container.sh -d naughtyhost.com -h naughtyhost -u teste -up teste -rp teste -mrp teste
+# unlink /etc/nginx/proxies-enabled/naughtyhost.com &&
+# unlink /etc/nginx/proxies-available/naughtyhost.com &&
+# unlink /etc/nginx/sites-available/naughtyhost.com &&
+# unlink /etc/nginx/sites-enabled/naughtyhost.com 
