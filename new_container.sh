@@ -55,6 +55,7 @@ ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOCKER_HOSTNAME
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOMAIN
 
 # cria proxy web
+echo "Configurando WEB"
 echo "server {  
         listen 80;
         server_name *.$DOMAIN;
@@ -67,18 +68,19 @@ echo "server {
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 # cria proxy mysql e ssh
+echo "Configurando MySQL e SSH"
 echo "server {
         listen 3306;
-        proxy_pass $DOCKER_HOSTNAME_db;
+        proxy_pass "$DOCKER_HOSTNAME"_db;
     }
-    upstream $DOCKER_HOSTNAME_db {
+    upstream "$DOCKER_HOSTNAME"_db {
         server $IP_CONTAINER:3306;
     }
     server {
         listen 22;
-        proxy_pass $DOCKER_HOSTNAME_ssh;
+        proxy_pass "$DOCKER_HOSTNAME"_ssh;
     }
-    upstream $DOCKER_HOSTNAME_ssh {
+    upstream "$DOCKER_HOSTNAME"_ssh {
         server $IP_CONTAINER:22;
 }" > /etc/nginx/proxies-available/$DOMAIN
 
@@ -86,6 +88,7 @@ echo "server {
 ln -s /etc/nginx/proxies-available/$DOMAIN /etc/nginx/proxies-enabled/$DOMAIN
 
 # reload no nginx
+echo "Reiniciando o Nginx"
 sudo /etc/init.d/nginx reload
 
 # ./new_container.sh -d naughtyhost.com -h naughtyhost -u teste -up teste -rp teste -mrp teste
