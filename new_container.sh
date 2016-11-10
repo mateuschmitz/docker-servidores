@@ -31,17 +31,22 @@ if [[ -z $DOCKER_HOSTNAME ]]; then
 fi
 
 # verifica quantos containers estão habilitados
-numdocker="$(docker ps -a | grep -c template/debian)"
-
-# caso não tenha nenhum ainda, monta com o primeiro volume
-if [ $numdocker == 0 ]; then 
-    numdocker=1
-fi
+numdocker="$(docker images | grep -c template/debian)"
 
 #caso já existam 10, exibe erro e termina a execução
 if [ $numdocker == 10 ]; then 
     echo "Já existem 10 containers"
     exit
+fi
+
+# caso já exista algum
+if [ $numdocker > 0 ]; then
+    numdocker=$((numdocker + 1))
+fi
+
+# caso não tenha nenhum ainda, monta com o primeiro volume
+if [ $numdocker == 0 ]; then 
+    numdocker=1
 fi
 
 # roda a imagem
@@ -73,7 +78,7 @@ ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOMAIN
 echo "Configurando WEB"
 echo "server {  
         listen 80;
-        server_name *.$DOMAIN;
+        server_name $DOMAIN;
         location / {
              proxy_pass http://$IP_CONTAINER:80;
         }
@@ -85,14 +90,14 @@ ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 # cria proxy mysql e ssh
 echo "Configurando MySQL e SSH"
 echo "server {
-        listen 3306;
+        listen $DOMAIN:3306;
         proxy_pass "$DOCKER_HOSTNAME"_db;
     }
     upstream "$DOCKER_HOSTNAME"_db {
         server $IP_CONTAINER:3306;
     }
     server {
-        listen 22;
+        listen $DOMAIN:22;
         proxy_pass "$DOCKER_HOSTNAME"_ssh;
     }
     upstream "$DOCKER_HOSTNAME"_ssh {
