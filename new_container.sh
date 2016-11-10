@@ -30,8 +30,23 @@ if [[ -z $DOCKER_HOSTNAME ]]; then
     exit
 fi
 
+# verifica quantos containers estão habilitados
+numdocker="$(docker ps -a | grep -c template/debian)"
+
+# caso não tenha nenhum ainda, monta com o primeiro volume
+if [ $numdocker == 0 ]; then 
+    numdocker=1
+fi
+
+#caso já existam 10, exibe erro e termina a execução
+if [ $numdocker == 10 ]; then 
+    echo "Já existem 10 containers"
+    exit
+fi
+
 # roda a imagem
-docker run -it -d --name $DOCKER_HOSTNAME -h $DOCKER_HOSTNAME template/debian /bin/bash
+docker run -it -d --name $DOCKER_HOSTNAME -h $DOCKER_HOSTNAME \
+-v /opt/volumes/docker$numdocker:/var/www template/debian /bin/bash
 
 # dá start na imagem
 docker start $DOCKER_HOSTNAME
