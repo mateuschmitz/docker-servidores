@@ -110,6 +110,7 @@ ln -s /etc/nginx/proxies-available/$DOMAIN /etc/nginx/proxies-enabled/$DOMAIN
 # reload no nginx
 echo "Reiniciando o Nginx"
 sudo /etc/init.d/nginx reload
+sudo /etc/init.d/nginx restart
 
 # ./new_container.sh -d naughtyhost.com -h naughtyhost -u teste -up teste -rp teste -mrp teste
 # unlink /etc/nginx/proxies-enabled/naughtyhost.com &&
