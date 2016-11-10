@@ -34,7 +34,7 @@ EXPOSE 21
 EXPOSE 30000-30009
 
 # Instala apache, mysql e php
-RUN apt-get install -y --fix-missing apt-utils mysql-server php5 php5-mysql php5-mcrypt apache2 vim git net-tools wget sudo openssh-server openssh-server
+RUN apt-get install -y --fix-missing apt-utils mysql-server php5 php5-mysql php5-mcrypt apache2 vim git net-tools wget sudo openssh-server
 RUN service apache2 stop
 
 # Muda o index do apache pra exibir a configuração do PHP

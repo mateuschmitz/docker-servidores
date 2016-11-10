@@ -8,3 +8,5 @@ do
     echo "Subindo container teste$i"
     ./new_container.sh -d $name".com" -h $name -u $name -up $name -rp $name -mrp $name
 done
+
+#unlink /etc/nginx/proxies-enabled/naughtyhost.com && unlink /etc/nginx/proxies-available/naughtyhost.com && unlink /etc/nginx/sites-available/naughtyhost.com && unlink /etc/nginx/sites-enabled/naughtyhost.com 
