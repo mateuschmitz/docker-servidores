@@ -31,7 +31,7 @@ if [[ -z $DOCKER_HOSTNAME ]]; then
 fi
 
 # verifica quantos containers estão habilitados
-numdocker="$(docker images | grep -c template/debian)"
+numdocker="$(docker ps -a | grep -c template/debian)"
 
 #caso já existam 10, exibe erro e termina a execução
 if [ $numdocker == 10 ]; then 
