@@ -88,8 +88,8 @@ echo "server {
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 # define o final da porta utilizada no serviço
-porta_ssh=$((3306 + numdocker))
-porta_db=$((2200 + numdocker))
+porta_ssh=$((2200 + numdocker))
+porta_db=$((3306 + numdocker))
 
 # cria proxy mysql e ssh
 echo "Configurando MySQL - Porta -> "$porta_db
