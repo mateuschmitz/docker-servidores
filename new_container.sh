@@ -74,6 +74,12 @@ ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $IP_CONTAINER
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOCKER_HOSTNAME
 ssh-keygen -f "/home/"$USER"/.ssh/known_hosts" -R $DOMAIN
 
+# Remove configurações antigas, caso existam
+unlink /etc/nginx/proxies-enabled/$DOMAIN &&
+unlink /etc/nginx/proxies-available/$DOMAIN &&
+unlink /etc/nginx/sites-available/$DOMAIN &&
+unlink /etc/nginx/sites-enabled/$DOMAIN 
+
 # cria proxy web
 echo "Configurando WEB"
 echo "server {  
@@ -116,9 +122,3 @@ ln -s /etc/nginx/proxies-available/$DOMAIN /etc/nginx/proxies-enabled/$DOMAIN
 echo "Reiniciando o Nginx"
 sudo /etc/init.d/nginx reload
 sudo /etc/init.d/nginx restart
-
-# ./new_container.sh -d naughtyhost.com -h naughtyhost -u teste -up teste -rp teste -mrp teste
-# unlink /etc/nginx/proxies-enabled/naughtyhost.com &&
-# unlink /etc/nginx/proxies-available/naughtyhost.com &&
-# unlink /etc/nginx/sites-available/naughtyhost.com &&
-# unlink /etc/nginx/sites-enabled/naughtyhost.com 
