@@ -87,17 +87,22 @@ echo "server {
 # cria o link simbólico
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
+# define o final da porta utilizada no serviço
+porta_ssh=$((3306 + numdocker))
+porta_db=$((2200 + numdocker))
+
 # cria proxy mysql e ssh
-echo "Configurando MySQL e SSH"
+echo "Configurando MySQL - Porta -> "$porta_db
+echo "Configurando SSH - Porta -> "$porta_ssh
 echo "server {
-        listen $DOMAIN:3306;
+        listen "$porta_db";
         proxy_pass "$DOCKER_HOSTNAME"_db;
     }
     upstream "$DOCKER_HOSTNAME"_db {
         server $IP_CONTAINER:3306;
     }
     server {
-        listen $DOMAIN:22;
+        listen "$porta_ssh";
         proxy_pass "$DOCKER_HOSTNAME"_ssh;
     }
     upstream "$DOCKER_HOSTNAME"_ssh {
